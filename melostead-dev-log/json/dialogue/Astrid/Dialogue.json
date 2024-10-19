@@ -1,0 +1,24 @@
+{
+  "sentences": [
+    {
+      "emotion": "Neutral",
+      "content": "Greetings, I am Lady Astrid Cordelia Di Costa Lune of the Noble House Lordsblade. But please, call me Astrid."
+    },
+    {
+      "emotion": "Happy",
+      "content": "I am from the neighboring state Dhavoro. While I am a lady, I am a knight first and foremost."
+    },
+    {
+      "emotion": "Mad",
+      "content": "I've come to the Kingdom of Anagar to help defeat the Dark Dragon and prove my status as a knight."
+    },
+    {
+      "emotion": "Shocked",
+      "content": "I have never really stayed in a village like Melostead. I've experienced all sorts of new things coming to this kingdom."
+    },
+    {
+      "emotion": "Neutral",
+      "content": "I must get back to my party. Do stay out of danger!"
+    }
+  ]
+}
