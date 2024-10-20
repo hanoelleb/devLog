@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, MutableRefObject } from "react";
 import variables from "../../../styles/variables.module.scss";
 
 const ClassButton = ({
@@ -55,6 +55,10 @@ const ChangeFeatureComponent = ({
   );
 };
 
+const CustomizerCanvas = ({ id }: { id: string }) => {
+  return <canvas id={id} width={500} height={500}></canvas>;
+};
+
 export default function CharacterCustomizer() {
   const DRAWING_X_POSITION = 175;
   const DRAWING_Y_POSITION = 100;
@@ -102,7 +106,6 @@ export default function CharacterCustomizer() {
         image.src = imgSrc;
         image.onload = function () {
           images.push(image);
-          console.log(images);
           resolve(imgSrc);
         };
 
@@ -123,6 +126,45 @@ export default function CharacterCustomizer() {
     const spriteType: (typeof GRAYSCALE_SPRITES)[number] | undefined =
       GRAYSCALE_SPRITES.find((spriteType) => image.src.includes(spriteType));
 
+    const EYE_COLORS = [
+      variables.eyeBrown,
+      variables.eyeLightBrown,
+      variables.eyeBlue,
+      variables.eyeLightBlue,
+      variables.eyeGreen,
+      variables.eyeGray,
+      variables.eyePurple,
+      variables.eyeRed,
+    ];
+
+    const HAIR_COLORS = [
+      variables.hairDarkBrown,
+      variables.hairBrown,
+      variables.hairLightBrown,
+      variables.hairBlonde,
+      variables.hairWhite,
+      variables.hairGray,
+      variables.hairBlack,
+      variables.hairRed,
+      variables.hairGinger,
+      variables.hairPink,
+      variables.hairBlue,
+      variables.hairGreen,
+      variables.hairPurple,
+    ];
+
+    const SKIN_COLORS = [
+      variables.skinFair,
+      variables.skinLight,
+      variables.skinPeach,
+      variables.skinTan,
+      variables.skinMed,
+      variables.skinDarkCool,
+      variables.skinDarkWarm,
+      variables.skinDark,
+      variables.skinDarkDeep,
+    ];
+
     let canvas: HTMLCanvasElement;
 
     if (spriteType) {
@@ -130,7 +172,7 @@ export default function CharacterCustomizer() {
         `#${spriteType}Canvas`
       ) as HTMLCanvasElement;
     } else {
-      canvas = document.querySelector("#glcanvas") as HTMLCanvasElement;
+      canvas = document.querySelector("#glCanvas") as HTMLCanvasElement;
     }
 
     const context = canvas.getContext("2d") as CanvasRenderingContext2D;
@@ -142,10 +184,11 @@ export default function CharacterCustomizer() {
       context.globalCompositeOperation = "source-atop";
 
       if (image.src.includes("Hair")) {
-        console.log("here");
-        context.fillStyle = "blue";
+        context.fillStyle = HAIR_COLORS[hairColorId];
+      } else if (image.src.includes("Pupil")) {
+        context.fillStyle = EYE_COLORS[eyeColorId];
       } else {
-        context.fillStyle = "red";
+        context.fillStyle = SKIN_COLORS[skinColorId];
       }
 
       context.globalAlpha = 0.5;
@@ -156,7 +199,7 @@ export default function CharacterCustomizer() {
         image.height
       );
 
-      context.globalCompositeOperation = "source-over";
+      //context.globalCompositeOperation = "source-over";
 
       context.drawImage(image, DRAWING_X_POSITION, DRAWING_Y_POSITION);
     }
@@ -210,18 +253,15 @@ export default function CharacterCustomizer() {
     return () => {
       document.body.removeChild(script);
     };
-  }, [bodyId, eyeId, hairId, classId]);
+  }, [bodyId, eyeId, hairId, classId, eyeColorId, hairColorId, skinColorId]);
 
   useEffect(() => {
-    console.log("second effect");
-    console.log(imagesList);
-
     const script = document.createElement("script");
 
     document.body.appendChild(script);
 
     if (imagesList.length >= 5) {
-      clearCanvases(["glcanvas", "BodyCanvas", "HairCanvas", "PupilCanvas"]);
+      clearCanvases(["glCanvas", "BodyCanvas", "HairCanvas", "PupilCanvas"]);
 
       imagesList.forEach((image: HTMLImageElement) => {
         drawImage(image);
@@ -245,17 +285,22 @@ export default function CharacterCustomizer() {
       ></img>
       <div className={variables.Customizer}>
         <div className={variables.CanvasLayer}>
-          <canvas id="BodyCanvas" width={500} height={500}></canvas>
-          <canvas id="glcanvas" width={500} height={500}></canvas>
-          <canvas id="HairCanvas" width={500} height={500}></canvas>
-          <canvas id="PupilCanvas" width={500} height={500}></canvas>
+          <CustomizerCanvas id={"BodyCanvas"}></CustomizerCanvas>
+          <CustomizerCanvas id={"glCanvas"}></CustomizerCanvas>
+          <CustomizerCanvas id={"HairCanvas"}></CustomizerCanvas>
+          <CustomizerCanvas id={"PupilCanvas"}></CustomizerCanvas>
         </div>
-
-        <h3>Body Type</h3>
-        <button onClick={handleBodyTypeA}>A</button>
-        <button onClick={handleBodyTypeB}>B</button>
-        <h3>Class</h3>
         <div className={variables.CustomizationPanel}>
+          <h3>Body Type</h3>
+          <button onClick={handleBodyTypeA}>A</button>
+          <button onClick={handleBodyTypeB}>B</button>
+          <ChangeFeatureComponent
+            featureStateHook={setSkinColorId}
+            currentFeatureId={skinColorId}
+            featureName="Skin Tone"
+            amountOfFeatures={9}
+          ></ChangeFeatureComponent>
+          <h3>Class</h3>
           <ClassButton
             setClassFunc={setClassId}
             classId={0}
@@ -278,10 +323,22 @@ export default function CharacterCustomizer() {
             amountOfFeatures={16}
           ></ChangeFeatureComponent>
           <ChangeFeatureComponent
+            featureStateHook={setEyeColorId}
+            currentFeatureId={eyeColorId}
+            featureName="Eye Color"
+            amountOfFeatures={8}
+          ></ChangeFeatureComponent>
+          <ChangeFeatureComponent
             featureStateHook={setHairId}
             currentFeatureId={hairId}
             featureName="Hair Style"
             amountOfFeatures={39}
+          ></ChangeFeatureComponent>
+          <ChangeFeatureComponent
+            featureStateHook={setHairColorId}
+            currentFeatureId={hairColorId}
+            featureName="Hair Color"
+            amountOfFeatures={13}
           ></ChangeFeatureComponent>
         </div>
       </div>

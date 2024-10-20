@@ -1,19 +1,91 @@
 $ui-dark-color: #4a2f06;
 $ui-light-color: #e7cda7;
 
+$canvas-height: 500px;
+$canvas-width: 500px;
+
+$eyeBrown: brown;
+$eyeLightBrown: rgb(184, 123, 87);
+$eyeBlue: rgb(56, 56, 173);
+$eyeLightBlue: rgb(96, 161, 183);
+$eyeGreen: rgb(33, 116, 33);
+$eyeGray: gray;
+$eyePurple: rgb(135, 20, 135);
+$eyeRed: red;
+
+$hairDarkBrown: rgb(88, 36, 12);
+$hairBrown: brown;
+$hairLightBrown: rgb(184, 123, 87);
+$hairBlonde: rgb(235, 211, 27);
+$hairWhite: white;
+$hairGray: gray;
+$hairBlack: rgb(35, 35, 35);
+$hairRed: rgb(201, 62, 34);
+$hairGinger: rgb(224, 132, 10);
+$hairPink: pink;
+$hairBlue: rgb(42, 40, 209);
+$hairGreen: rgb(16, 150, 16);
+$hairPurple: rgb(172, 69, 172);
+
+$skinFair: rgb(230, 209, 206);
+$skinLight: rgb(226, 187, 187);
+$skinPeach: rgb(224, 171, 171);
+$skinTan: rgb(224, 199, 171);
+$skinMed: rgb(209, 173, 133);
+$skinDarkCool: rgb(159, 120, 74);
+$skinDarkWarm: rgb(145, 97, 75);
+$skinDark: rgb(71, 43, 27);
+$skinDarkDeep: rgb(42, 23, 12);
+
 :export {
   uiDarkColor: $ui-dark-color;
   uiLightColor: $ui-light-color;
+  canvasHeight: $canvas-height;
+  canvasWidth: $canvas-width;
+
+  eyeBrown: $eyeBrown;
+  eyeLightBrown: $eyeLightBrown;
+  eyeBlue: $eyeBlue;
+  eyeLightBlue: $eyeLightBlue;
+  eyeGreen: $eyeGreen;
+  eyeGray: $eyeGray;
+  eyePurple: $eyePurple;
+  eyeRed: $eyeRed;
+
+  hairDarkBrown: $hairDarkBrown;
+  hairBrown: $hairBrown;
+  hairLightBrown: $hairLightBrown;
+  hairBlonde: $hairBlonde;
+  hairWhite: $hairWhite;
+  hairGray: $hairGray;
+  hairBlack: $hairBlack;
+  hairRed: $hairRed;
+  hairGinger: $hairGinger;
+  hairPink: $hairPink;
+  hairBlue: $hairBlue;
+  hairGreen: $hairGreen;
+  hairPurple: $hairPurple;
+
+  skinFair: $skinFair;
+  skinLight: $skinLight;
+  skinPeach: $skinPeach;
+  skinTan: $skinTan;
+  skinMed: $skinMed;
+  skinDarkCool: $skinDarkCool;
+  skinDarkWarm: $skinDarkWarm;
+  skinDark: $skinDark;
+  skinDarkDeep: $skinDarkDeep;
 }
 
-.CanvasLayer {
+.Customizer .CanvasLayer {
   position: relative;
   background-color: blueviolet;
+  border: blueviolet;
+  height: $canvas-height;
+  width: $canvas-width;
 }
 
 .CanvasLayer canvas {
-  top: 100;
-  left: 100;
   position: absolute;
   border-style: solid;
   border-width: thick;
@@ -22,8 +94,9 @@ $ui-light-color: #e7cda7;
 
 .CustomizationPanel {
   display: flex;
+  flex-flow: column;
 }
 
 .Customizer {
-  display: grid;
+  display: flex;
 }
