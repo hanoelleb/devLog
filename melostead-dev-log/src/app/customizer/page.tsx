@@ -2,7 +2,6 @@
 
 import Script from "next/script";
 import { useState, useEffect } from "react";
-import BodyA from "../../../public/characterCreator/BodyA.png";
 
 const ClassButton = ({
   setClassFunc,
@@ -67,7 +66,9 @@ export default function CharacterCustomizer() {
   const [eyeId, setEyeId] = useState(0);
   const [eyeColorId, setEyeColorId] = useState(0);
 
-  const [imagesLoaded, setImagesLoaded] = useState(0);
+  const [imagesList, setImagesList] = useState<HTMLImageElement[]>([]);
+  // const [imagesLoaded, setImagesLoaded] = useState(false);
+  // let imagesLoaded: HTMLImageElement[] = [];
 
   const handleBodyTypeA = () => {
     setBodyId(0);
@@ -77,38 +78,69 @@ export default function CharacterCustomizer() {
     setBodyId(1);
   };
 
-  const drawImage = (imgSrc: string, context: CanvasRenderingContext2D) => {
-    const image = new Image();
-    image.src = imgSrc;
-    image.onload = function () {
-      context.globalAlpha = 1.0;
+  const createImages = (imgSources: string[]) => {
+    const images: HTMLImageElement[] = [];
 
-      context.globalCompositeOperation = "source-over";
-      context.drawImage(image, 100, 100);
+    const loadImage = (imgSrc: string) => {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.src = imgSrc;
+        image.onload = function () {
+          images.push(image);
+          console.log(images);
+          resolve(imgSrc);
+        };
 
-      // Create colored mask
-
-      //   context.globalAlpha = 0.5;
-
-      //   context.globalCompositeOperation = "source-in";
-      //   context.fillStyle = "blue";
-      //   context.fillRect(0, 0, 500, 500);
-
-      //   context.globalAlpha = 1.0;
-
-      //   // Multiply mask by original image to get final colored image
-      //   context.globalCompositeOperation = "multiply";
-      //   context.drawImage(image, 100, 100);
+        image.onerror = function (err) {
+          reject(err);
+        };
+      });
     };
+
+    Promise.all(imgSources.map((imgSrc) => loadImage(imgSrc))).then(() => {
+      setImagesList(images);
+    });
   };
 
-  useEffect(() => {
-    const script = document.createElement("script");
+  const drawImage = (image: HTMLImageElement) => {
+    const GRAYSCALE_SPRITES = ["Hair", "Pupil", "Body"];
 
     const canvas = document.querySelector("#glcanvas") as HTMLCanvasElement;
 
     const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.globalCompositeOperation = "source-over";
+    context.globalAlpha = 1.0;
+
+    if (!image.complete) {
+      console.log(`${image.src} IS NOT LOADED`);
+    }
+    context.drawImage(image, 100, 100);
+
+    //   Create colored mask
+
+    const isGrayscale = GRAYSCALE_SPRITES.find((spriteType) =>
+      image.src.includes(spriteType)
+    );
+
+    if (isGrayscale) {
+      //   console.log("GRAYSCALE");
+      //   console.log(image.src);
+      //   context.globalAlpha = 0.8;
+      //   context.globalCompositeOperation = "source-in";
+      //   console.log(context.globalCompositeOperation);
+      //   context.fillStyle = "blue";
+      //   context.fillRect(0, 0, 500, 500);
+
+      context.globalAlpha = 1.0;
+
+      // Multiply mask by original image to get final colored image
+      // context.globalCompositeOperation = "multiply";
+      // context.drawImage(image, 100, 100);
+    }
+  };
+
+  useEffect(() => {
+    const script = document.createElement("script");
 
     document.body.appendChild(script);
 
@@ -140,18 +172,45 @@ export default function CharacterCustomizer() {
     const eyeBaseImgSrc = `../characterCreator/eyes/EyeBase${eyeId}.png`;
     const pupilImgSrc = `../characterCreator/eyes/Pupil${eyeId}.png`;
 
-    const hairImg = `../characterCreator/hair/Hair${hairId}.png`;
+    const hairImgSrc = `../characterCreator/hair/Hair${hairId}.png`;
 
-    drawImage(bodyImgSrc, context);
-    drawImage(clothingImgSrc, context);
-    drawImage(eyeBaseImgSrc, context);
-    drawImage(pupilImgSrc, context);
-    drawImage(hairImg, context);
+    createImages([
+      bodyImgSrc,
+      clothingImgSrc,
+      eyeBaseImgSrc,
+      pupilImgSrc,
+      hairImgSrc,
+    ]);
 
     return () => {
       document.body.removeChild(script);
     };
-  }, [bodyId, classId, eyeId, hairId]);
+  }, [bodyId, eyeId, hairId, classId]);
+
+  useEffect(() => {
+    console.log("second effect");
+    console.log(imagesList);
+
+    const script = document.createElement("script");
+
+    document.body.appendChild(script);
+
+    if (imagesList.length >= 5) {
+      const canvas = document.querySelector("#glcanvas") as HTMLCanvasElement;
+
+      const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+      context.globalCompositeOperation = "source-over";
+
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      imagesList.forEach((image: HTMLImageElement) => {
+        drawImage(image);
+      });
+    }
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, [imagesList]);
 
   return (
     <>
@@ -163,7 +222,6 @@ export default function CharacterCustomizer() {
         height={200}
         style={{ display: "none" }}
       ></img>
-
       <canvas id="glcanvas" width={500} height={500}></canvas>
       <Script src="/scripts/characterCreator.js"></Script>
       <h3>Body Type</h3>
