@@ -2,15 +2,16 @@
 
 import Script from "next/script";
 import { useState, useEffect } from "react";
+import variables from "../../../styles/variables.module.scss";
 
 const ClassButton = ({
   setClassFunc,
   classId,
-  className,
+  playerClassName,
 }: {
   setClassFunc: Function;
   classId: number;
-  className: string;
+  playerClassName: string;
 }) => {
   return (
     <button
@@ -18,7 +19,7 @@ const ClassButton = ({
         setClassFunc(classId);
       }}
     >
-      {className}
+      {playerClassName}
     </button>
   );
 };
@@ -55,6 +56,9 @@ const ChangeFeatureComponent = ({
 };
 
 export default function CharacterCustomizer() {
+  const DRAWING_X_POSITION = 175;
+  const DRAWING_Y_POSITION = 100;
+
   const [bodyId, setBodyId] = useState(0);
   const [classId, setClassId] = useState(0);
 
@@ -76,6 +80,17 @@ export default function CharacterCustomizer() {
 
   const handleBodyTypeB = () => {
     setBodyId(1);
+  };
+
+  const clearCanvases = (canvasNames: string[]) => {
+    canvasNames.forEach((name) => {
+      const canvas = document.querySelector(`#${name}`) as HTMLCanvasElement;
+
+      const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+      context.globalCompositeOperation = "source-over";
+
+      context.clearRect(0, 0, canvas.width, canvas.height);
+    });
   };
 
   const createImages = (imgSources: string[]) => {
@@ -103,40 +118,50 @@ export default function CharacterCustomizer() {
   };
 
   const drawImage = (image: HTMLImageElement) => {
-    const GRAYSCALE_SPRITES = ["Hair", "Pupil", "Body"];
+    const GRAYSCALE_SPRITES = ["Hair", "Pupil", "Body"] as const;
 
-    const canvas = document.querySelector("#glcanvas") as HTMLCanvasElement;
+    const spriteType: (typeof GRAYSCALE_SPRITES)[number] | undefined =
+      GRAYSCALE_SPRITES.find((spriteType) => image.src.includes(spriteType));
+
+    let canvas: HTMLCanvasElement;
+
+    if (spriteType) {
+      canvas = document.querySelector(
+        `#${spriteType}Canvas`
+      ) as HTMLCanvasElement;
+    } else {
+      canvas = document.querySelector("#glcanvas") as HTMLCanvasElement;
+    }
 
     const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+
     context.globalCompositeOperation = "source-over";
+    context.drawImage(image, DRAWING_X_POSITION, DRAWING_Y_POSITION);
+
+    if (spriteType) {
+      context.globalCompositeOperation = "source-atop";
+
+      if (image.src.includes("Hair")) {
+        console.log("here");
+        context.fillStyle = "blue";
+      } else {
+        context.fillStyle = "red";
+      }
+
+      context.globalAlpha = 0.5;
+      context.fillRect(
+        DRAWING_X_POSITION,
+        DRAWING_Y_POSITION,
+        image.width,
+        image.height
+      );
+
+      context.globalCompositeOperation = "source-over";
+
+      context.drawImage(image, DRAWING_X_POSITION, DRAWING_Y_POSITION);
+    }
+
     context.globalAlpha = 1.0;
-
-    if (!image.complete) {
-      console.log(`${image.src} IS NOT LOADED`);
-    }
-    context.drawImage(image, 100, 100);
-
-    //   Create colored mask
-
-    const isGrayscale = GRAYSCALE_SPRITES.find((spriteType) =>
-      image.src.includes(spriteType)
-    );
-
-    if (isGrayscale) {
-      //   console.log("GRAYSCALE");
-      //   console.log(image.src);
-      //   context.globalAlpha = 0.8;
-      //   context.globalCompositeOperation = "source-in";
-      //   console.log(context.globalCompositeOperation);
-      //   context.fillStyle = "blue";
-      //   context.fillRect(0, 0, 500, 500);
-
-      context.globalAlpha = 1.0;
-
-      // Multiply mask by original image to get final colored image
-      // context.globalCompositeOperation = "multiply";
-      // context.drawImage(image, 100, 100);
-    }
   };
 
   useEffect(() => {
@@ -176,10 +201,10 @@ export default function CharacterCustomizer() {
 
     createImages([
       bodyImgSrc,
-      clothingImgSrc,
-      eyeBaseImgSrc,
-      pupilImgSrc,
       hairImgSrc,
+      pupilImgSrc,
+      eyeBaseImgSrc,
+      clothingImgSrc,
     ]);
 
     return () => {
@@ -196,12 +221,8 @@ export default function CharacterCustomizer() {
     document.body.appendChild(script);
 
     if (imagesList.length >= 5) {
-      const canvas = document.querySelector("#glcanvas") as HTMLCanvasElement;
+      clearCanvases(["glcanvas", "BodyCanvas", "HairCanvas", "PupilCanvas"]);
 
-      const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-      context.globalCompositeOperation = "source-over";
-
-      context.clearRect(0, 0, canvas.width, canvas.height);
       imagesList.forEach((image: HTMLImageElement) => {
         drawImage(image);
       });
@@ -222,39 +243,48 @@ export default function CharacterCustomizer() {
         height={200}
         style={{ display: "none" }}
       ></img>
-      <canvas id="glcanvas" width={500} height={500}></canvas>
-      <Script src="/scripts/characterCreator.js"></Script>
-      <h3>Body Type</h3>
-      <button onClick={handleBodyTypeA}>A</button>
-      <button onClick={handleBodyTypeB}>B</button>
-      <h3>Class</h3>
-      <ClassButton
-        setClassFunc={setClassId}
-        classId={0}
-        className="Alchemist"
-      ></ClassButton>
-      <ClassButton
-        setClassFunc={setClassId}
-        classId={1}
-        className="Blacksmith"
-      ></ClassButton>
-      <ClassButton
-        setClassFunc={setClassId}
-        classId={2}
-        className="Woodworker"
-      ></ClassButton>
-      <ChangeFeatureComponent
-        featureStateHook={setEyeId}
-        currentFeatureId={eyeId}
-        featureName="Eye Shape"
-        amountOfFeatures={16}
-      ></ChangeFeatureComponent>
-      <ChangeFeatureComponent
-        featureStateHook={setHairId}
-        currentFeatureId={hairId}
-        featureName="Hair Style"
-        amountOfFeatures={39}
-      ></ChangeFeatureComponent>
+      <div className={variables.Customizer}>
+        <div className={variables.CanvasLayer}>
+          <canvas id="BodyCanvas" width={500} height={500}></canvas>
+          <canvas id="glcanvas" width={500} height={500}></canvas>
+          <canvas id="HairCanvas" width={500} height={500}></canvas>
+          <canvas id="PupilCanvas" width={500} height={500}></canvas>
+        </div>
+
+        <h3>Body Type</h3>
+        <button onClick={handleBodyTypeA}>A</button>
+        <button onClick={handleBodyTypeB}>B</button>
+        <h3>Class</h3>
+        <div className={variables.CustomizationPanel}>
+          <ClassButton
+            setClassFunc={setClassId}
+            classId={0}
+            playerClassName="Alchemist"
+          ></ClassButton>
+          <ClassButton
+            setClassFunc={setClassId}
+            classId={1}
+            playerClassName="Blacksmith"
+          ></ClassButton>
+          <ClassButton
+            setClassFunc={setClassId}
+            classId={2}
+            playerClassName="Woodworker"
+          ></ClassButton>
+          <ChangeFeatureComponent
+            featureStateHook={setEyeId}
+            currentFeatureId={eyeId}
+            featureName="Eye Shape"
+            amountOfFeatures={16}
+          ></ChangeFeatureComponent>
+          <ChangeFeatureComponent
+            featureStateHook={setHairId}
+            currentFeatureId={hairId}
+            featureName="Hair Style"
+            amountOfFeatures={39}
+          ></ChangeFeatureComponent>
+        </div>
+      </div>
     </>
   );
 }

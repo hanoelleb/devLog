@@ -5,3 +5,25 @@ $ui-light-color: #e7cda7;
   uiDarkColor: $ui-dark-color;
   uiLightColor: $ui-light-color;
 }
+
+.CanvasLayer {
+  position: relative;
+  background-color: blueviolet;
+}
+
+.CanvasLayer canvas {
+  top: 100;
+  left: 100;
+  position: absolute;
+  border-style: solid;
+  border-width: thick;
+  border-color: aqua;
+}
+
+.CustomizationPanel {
+  display: flex;
+}
+
+.Customizer {
+  display: grid;
+}
