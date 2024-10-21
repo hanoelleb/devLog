@@ -1,5 +1,3 @@
-"use client";
-
 import { randomUUID } from "crypto";
 import { NavBar } from "../page";
 import { AppProps } from "next/app";

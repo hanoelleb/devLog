@@ -1,7 +1,7 @@
 "use client";
 
-import Script from "next/script";
-import { useState, useEffect, useRef, MutableRefObject } from "react";
+import { useState, useEffect } from "react";
+import { NavBar } from "../page";
 import variables from "../../../styles/variables.module.scss";
 
 const ClassButton = ({
@@ -46,12 +46,12 @@ const ChangeFeatureComponent = ({
   };
 
   return (
-    <>
+    <div className={variables.ChangeFeature}>
       <h3>{featureName}</h3>
       <button onClick={handleDecrement}>Prev</button>
       <p>{currentFeatureId}</p>
       <button onClick={handleIncrement}>Next</button>
-    </>
+    </div>
   );
 };
 
@@ -75,16 +75,45 @@ export default function CharacterCustomizer() {
   const [eyeColorId, setEyeColorId] = useState(0);
 
   const [imagesList, setImagesList] = useState<HTMLImageElement[]>([]);
-  // const [imagesLoaded, setImagesLoaded] = useState(false);
-  // let imagesLoaded: HTMLImageElement[] = [];
 
-  const handleBodyTypeA = () => {
-    setBodyId(0);
-  };
+  const EYE_COLORS = [
+    variables.eyeBrown,
+    variables.eyeLightBrown,
+    variables.eyeBlue,
+    variables.eyeLightBlue,
+    variables.eyeGreen,
+    variables.eyeGray,
+    variables.eyePurple,
+    variables.eyeRed,
+  ];
 
-  const handleBodyTypeB = () => {
-    setBodyId(1);
-  };
+  const HAIR_COLORS = [
+    variables.hairDarkBrown,
+    variables.hairBrown,
+    variables.hairLightBrown,
+    variables.hairBlonde,
+    variables.hairWhite,
+    variables.hairGray,
+    variables.hairBlack,
+    variables.hairRed,
+    variables.hairGinger,
+    variables.hairPink,
+    variables.hairBlue,
+    variables.hairGreen,
+    variables.hairPurple,
+  ];
+
+  const SKIN_COLORS = [
+    variables.skinFair,
+    variables.skinLight,
+    variables.skinPeach,
+    variables.skinTan,
+    variables.skinMed,
+    variables.skinDarkCool,
+    variables.skinDarkWarm,
+    variables.skinDark,
+    variables.skinDarkDeep,
+  ];
 
   const clearCanvases = (canvasNames: string[]) => {
     canvasNames.forEach((name) => {
@@ -126,45 +155,6 @@ export default function CharacterCustomizer() {
     const spriteType: (typeof GRAYSCALE_SPRITES)[number] | undefined =
       GRAYSCALE_SPRITES.find((spriteType) => image.src.includes(spriteType));
 
-    const EYE_COLORS = [
-      variables.eyeBrown,
-      variables.eyeLightBrown,
-      variables.eyeBlue,
-      variables.eyeLightBlue,
-      variables.eyeGreen,
-      variables.eyeGray,
-      variables.eyePurple,
-      variables.eyeRed,
-    ];
-
-    const HAIR_COLORS = [
-      variables.hairDarkBrown,
-      variables.hairBrown,
-      variables.hairLightBrown,
-      variables.hairBlonde,
-      variables.hairWhite,
-      variables.hairGray,
-      variables.hairBlack,
-      variables.hairRed,
-      variables.hairGinger,
-      variables.hairPink,
-      variables.hairBlue,
-      variables.hairGreen,
-      variables.hairPurple,
-    ];
-
-    const SKIN_COLORS = [
-      variables.skinFair,
-      variables.skinLight,
-      variables.skinPeach,
-      variables.skinTan,
-      variables.skinMed,
-      variables.skinDarkCool,
-      variables.skinDarkWarm,
-      variables.skinDark,
-      variables.skinDarkDeep,
-    ];
-
     let canvas: HTMLCanvasElement;
 
     if (spriteType) {
@@ -184,24 +174,22 @@ export default function CharacterCustomizer() {
       context.globalCompositeOperation = "source-atop";
 
       if (image.src.includes("Hair")) {
+        context.globalAlpha = 0.5;
         context.fillStyle = HAIR_COLORS[hairColorId];
       } else if (image.src.includes("Pupil")) {
+        context.globalAlpha = 0.5;
         context.fillStyle = EYE_COLORS[eyeColorId];
       } else {
+        context.globalAlpha = 0.7;
         context.fillStyle = SKIN_COLORS[skinColorId];
       }
 
-      context.globalAlpha = 0.5;
       context.fillRect(
         DRAWING_X_POSITION,
         DRAWING_Y_POSITION,
         image.width,
         image.height
       );
-
-      //context.globalCompositeOperation = "source-over";
-
-      context.drawImage(image, DRAWING_X_POSITION, DRAWING_Y_POSITION);
     }
 
     context.globalAlpha = 1.0;
@@ -275,14 +263,8 @@ export default function CharacterCustomizer() {
 
   return (
     <>
-      <img
-        id="BodyA"
-        src="/characterCreator/BodyA.png"
-        alt="Pixel Sprite of Feminine Body for Character Customization"
-        width={100}
-        height={200}
-        style={{ display: "none" }}
-      ></img>
+      <NavBar></NavBar>
+
       <div className={variables.Customizer}>
         <div className={variables.CanvasLayer}>
           <CustomizerCanvas id={"BodyCanvas"}></CustomizerCanvas>
@@ -291,16 +273,8 @@ export default function CharacterCustomizer() {
           <CustomizerCanvas id={"PupilCanvas"}></CustomizerCanvas>
         </div>
         <div className={variables.CustomizationPanel}>
-          <h3>Body Type</h3>
-          <button onClick={handleBodyTypeA}>A</button>
-          <button onClick={handleBodyTypeB}>B</button>
-          <ChangeFeatureComponent
-            featureStateHook={setSkinColorId}
-            currentFeatureId={skinColorId}
-            featureName="Skin Tone"
-            amountOfFeatures={9}
-          ></ChangeFeatureComponent>
           <h3>Class</h3>
+
           <ClassButton
             setClassFunc={setClassId}
             classId={0}
@@ -316,6 +290,28 @@ export default function CharacterCustomizer() {
             classId={2}
             playerClassName="Woodworker"
           ></ClassButton>
+          <h3>Body Type</h3>
+          <button
+            onClick={() => {
+              setBodyId(0);
+            }}
+          >
+            A
+          </button>
+          <button
+            onClick={() => {
+              setBodyId(1);
+            }}
+          >
+            B
+          </button>
+          <ChangeFeatureComponent
+            featureStateHook={setSkinColorId}
+            currentFeatureId={skinColorId}
+            featureName="Skin Tone"
+            amountOfFeatures={9}
+          ></ChangeFeatureComponent>
+
           <ChangeFeatureComponent
             featureStateHook={setEyeId}
             currentFeatureId={eyeId}
@@ -338,7 +334,7 @@ export default function CharacterCustomizer() {
             featureStateHook={setHairColorId}
             currentFeatureId={hairColorId}
             featureName="Hair Color"
-            amountOfFeatures={13}
+            amountOfFeatures={HAIR_COLORS.length}
           ></ChangeFeatureComponent>
         </div>
       </div>

@@ -13,13 +13,13 @@ $eyeGray: gray;
 $eyePurple: rgb(135, 20, 135);
 $eyeRed: red;
 
-$hairDarkBrown: rgb(88, 36, 12);
-$hairBrown: brown;
+$hairDarkBrown: rgb(61, 24, 6);
+$hairBrown: rgb(120, 69, 33);
 $hairLightBrown: rgb(184, 123, 87);
 $hairBlonde: rgb(235, 211, 27);
 $hairWhite: white;
 $hairGray: gray;
-$hairBlack: rgb(35, 35, 35);
+$hairBlack: rgb(12, 12, 12);
 $hairRed: rgb(201, 62, 34);
 $hairGinger: rgb(224, 132, 10);
 $hairPink: pink;
@@ -27,15 +27,15 @@ $hairBlue: rgb(42, 40, 209);
 $hairGreen: rgb(16, 150, 16);
 $hairPurple: rgb(172, 69, 172);
 
-$skinFair: rgb(230, 209, 206);
-$skinLight: rgb(226, 187, 187);
-$skinPeach: rgb(224, 171, 171);
-$skinTan: rgb(224, 199, 171);
-$skinMed: rgb(209, 173, 133);
-$skinDarkCool: rgb(159, 120, 74);
-$skinDarkWarm: rgb(145, 97, 75);
-$skinDark: rgb(71, 43, 27);
-$skinDarkDeep: rgb(42, 23, 12);
+$skinFair: rgb(250, 216, 211);
+$skinLight: rgb(254, 194, 166);
+$skinPeach: rgb(252, 195, 162);
+$skinTan: rgb(250, 221, 167);
+$skinMed: rgb(233, 170, 98);
+$skinDarkCool: rgb(156, 107, 51);
+$skinDarkWarm: rgb(147, 82, 51);
+$skinDark: rgb(82, 40, 14);
+$skinDarkDeep: rgb(56, 23, 3);
 
 :export {
   uiDarkColor: $ui-dark-color;
@@ -77,26 +77,60 @@ $skinDarkDeep: rgb(42, 23, 12);
   skinDarkDeep: $skinDarkDeep;
 }
 
-.Customizer .CanvasLayer {
-  position: relative;
-  background-color: blueviolet;
-  border: blueviolet;
-  height: $canvas-height;
-  width: $canvas-width;
-}
-
-.CanvasLayer canvas {
-  position: absolute;
-  border-style: solid;
-  border-width: thick;
-  border-color: aqua;
-}
-
-.CustomizationPanel {
-  display: flex;
-  flex-flow: column;
-}
-
 .Customizer {
   display: flex;
+
+  .CustomizationPanel {
+    display: flex;
+    flex-flow: column;
+  }
+
+  .CanvasLayer {
+    margin-top: 60px;
+    position: relative;
+    background-color: blueviolet;
+    border: blueviolet;
+    height: $canvas-height;
+    width: $canvas-width;
+
+    canvas {
+      position: absolute;
+      border-style: solid;
+      border-width: thick;
+      border-color: aqua;
+    }
+  }
+}
+
+.ChangeFeature {
+  display: flex;
+  flex-direction: row;
+}
+
+.MainPage {
+}
+
+.NavBar {
+  position: absolute;
+
+  a {
+    padding: 10px;
+  }
+}
+
+@mixin characterImage {
+  background-position: top;
+  transform: scale(0.5);
+  width: 400px;
+  height: 400px;
+}
+
+.CharacterSelectAstrid {
+  @include characterImage();
+  background-image: url("/portraits/Astrid/Neutral.png");
+}
+
+.CharacterSelectZuri {
+  @include characterImage();
+  background-image: url("/portraits/Zuri/Neutral.png");
 }

@@ -1,5 +1,5 @@
 {
-  "sentences": [
+  "Astrid": [
     {
       "emotion": "Neutral",
       "content": "Greetings, I am Lady Astrid Cordelia Di Costa Lune of the Noble House Lordsblade. But please, call me Astrid."
@@ -19,6 +19,28 @@
     {
       "emotion": "Neutral",
       "content": "I must get back to my party. Do stay out of danger!"
+    }
+  ],
+  "Zuri": [
+    {
+      "emotion": "Bored",
+      "content": "Um, hey. My name is Zuri."
+    },
+    {
+      "emotion": "Neutral",
+      "content": "I'm a witch. I live in the woods outside of the village."
+    },
+    {
+      "emotion": "Happy",
+      "content": "I read people's fortunes and make good luck charms. I'm great with healing magic too."
+    },
+    {
+      "emotion": "Mad",
+      "content": "I've always enjoyed solitude. Melostead seems nice...but as a witch I prefer keeping to myself in my cottage."
+    },
+    {
+      "emotion": "Bored",
+      "content": "Anyway, I think I'll head home now. If you have need of me, you know where I am."
     }
   ]
 }
